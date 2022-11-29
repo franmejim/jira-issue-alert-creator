@@ -72,6 +72,8 @@ def create_jira_issue():
 def handle_post_create_issue():
     body = request.get_json();
     print("debug", request.get_json())
+    with open('db.json', 'w') as file:
+        json.dump(body, file);
     
     try:
         # create_jira_issue(body)
@@ -81,15 +83,18 @@ def handle_post_create_issue():
 
     return json.dumps({ "status": "Issue creada.", "request_body": body }), 201;
 
+@api.route("/get-report", methods=['GET'])
+def welcome_message():
+    with open('db.json') as file:
+        data = json.load(file);
+        return json.dumps({ "info": data }), 200;
+
 @api.route("/", methods=['GET'])
 def welcome_message():
     return json.dumps({ "status": "Service running." }), 200;
 
 
 if __name__ == "__main__":
-    
-    # global config;
-    # config = os.environ;
 
     if api.config == None:
         print("Missing .env file.");
