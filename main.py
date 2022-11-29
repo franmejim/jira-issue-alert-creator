@@ -1,14 +1,16 @@
+import os;
 import json;
-# import logging;
 import requests;
+from config import config;
 from flask import Flask, request;
-from dotenv import dotenv_values;
 from requests.auth import HTTPBasicAuth;
 
 api = Flask(__name__);
 
+api.config.from_object(config['production'])
+
 def create_jira_issue():
-    authentication = HTTPBasicAuth(username=config["AUTH_USER"], password=config["AUTH_PWD_TOKEN"]);
+    authentication = HTTPBasicAuth(username=api.config["AUTH_USER"], password=api.config["AUTH_PWD_TOKEN"]);
 
     bodyPaylaod = {
         "fields": {
@@ -64,7 +66,7 @@ def create_jira_issue():
         "update": {}
     };
 
-    requests.post(config["ATLASSIAN_API_URL"], auth=authentication, json=bodyPaylaod);
+    requests.post(api.config["ATLASSIAN_API_URL"], auth=authentication, json=bodyPaylaod);
 
 
 @api.route("/splunk-jira-issue", methods=['POST'])
@@ -73,28 +75,33 @@ def handle_post_create_issue():
     print("debug", request.get_json())
     
     try:
-        create_jira_issue(body)
+        # create_jira_issue(body)
+        print("debug-2")
     except:
         return 500;
 
-    return json.dumps({ "status": "Issue creada." }), 201;
+    return json.dumps({ "status": "Issue creada.", "request_body": body }), 201;
+
+@api.route("/", methods=['GET'])
+def welcome_message():
+    return json.dumps({ "status": "Service running." }), 200;
 
 
 if __name__ == "__main__":
     
-    global config;
-    config = dotenv_values();
+    # global config;
+    # config = os.environ;
 
-    if config == None:
+    if api.config == None:
         print("Missing .env file.");
         exit(1);
 
-    if config.get("ATLASSIAN_API_URL") == None or config.get("ATLASSIAN_API_URL") == "":
+    if api.config.get("ATLASSIAN_API_URL") == None or api.config.get("ATLASSIAN_API_URL") == "":
         print("Falta el campo ATLASSIAN_API_URL, en el fichero .env indicando la url de la api de Atlassian");
         exit(1);
 
-    if config.get("AUTH_USER") == None or config.get("AUTH_PWD_TOKEN") == None:
+    if api.config.get("AUTH_USER") == None or api.config.get("AUTH_PWD_TOKEN") == None:
         print("Falta alguno de los campos AUTH_PWD_TOKEN / AUTH_USER, en el fichero .env.");
         exit(1);
 
-    api.run(config["LISTEN_HOST"], config["LISTEN_PORT"]);
+    api.run(debug=True);
