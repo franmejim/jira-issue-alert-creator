@@ -84,7 +84,7 @@ def handle_post_create_issue():
     return json.dumps({ "status": "Issue creada.", "request_body": body }), 201;
 
 @api.route("/get-report", methods=['GET'])
-def welcome_message():
+def get_last_report():
     with open('db.json') as file:
         data = json.load(file);
         return json.dumps({ "info": data }), 200;
