@@ -85,7 +85,7 @@ def handle_post_create_issue():
 
 @api.route("/get-report", methods=['GET'])
 def get_last_report():
-    with open('db.json') as file:
+    with open('db.json', 'r') as file:
         data = json.load(file);
         return json.dumps({ "info": data }), 200;
 
