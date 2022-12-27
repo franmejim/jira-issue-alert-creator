@@ -108,4 +108,4 @@ if __name__ == "__main__":
         print("Falta alguno de los campos AUTH_PWD_TOKEN / AUTH_USER, en el fichero .env.");
         exit(1);
     
-    api.run(debug=True, port=443);
+    api.run(debug=True);
