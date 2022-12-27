@@ -107,5 +107,5 @@ if __name__ == "__main__":
     if api.config.get("AUTH_USER") == None or api.config.get("AUTH_PWD_TOKEN") == None:
         print("Falta alguno de los campos AUTH_PWD_TOKEN / AUTH_USER, en el fichero .env.");
         exit(1);
-
-    api.run(debug=True);
+    
+    api.run(debug=True, port=443);
